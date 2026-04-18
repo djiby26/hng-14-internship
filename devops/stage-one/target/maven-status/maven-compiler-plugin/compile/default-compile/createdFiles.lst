@@ -1,0 +1,3 @@
+com/java/hng/App.class
+com/java/hng/exceptions/InvalidNameException.class
+com/java/hng/exceptions/MissingNameException.class
