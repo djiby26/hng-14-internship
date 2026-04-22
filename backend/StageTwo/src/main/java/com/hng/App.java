@@ -28,13 +28,7 @@ public class App
                         mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
                     }));
 
-
-
                     config.routes.apiBuilder(controller::registerRoutes);
-
-//                    config.routes.exception(JacksonException.class, (e,ctx) -> {
-//                        ctx
-//                    });
 
                     config.routes.exception(IllegalArgumentException.class, (e, ctx) ->
                         ctx.status(400).json(ApiResponse.error(e.getMessage()))
@@ -43,7 +37,7 @@ public class App
                     config.routes.exception(ExternalApiException.class, (e, ctx) ->
                         ctx.status(502).json(Map.of(
                                 "status",  "502",
-                                "message", e.getMessage()   // "{apiName} returned an invalid response"
+                                "message", e.getMessage()
                         ))
                     );
 

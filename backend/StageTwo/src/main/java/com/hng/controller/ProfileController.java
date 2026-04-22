@@ -61,10 +61,12 @@ public class ProfileController {
         String ageGroup  = ctx.queryParam("age_group");
         String minAge    = ctx.queryParam("min_age");
         String maxAge    = ctx.queryParam("max_age");
+        String sortBy = ctx.queryParam("sort_by");
+        String order = ctx.queryParam("order");
         String minGenderProbability    = ctx.queryParam("min_gender_probability");
         String minCountryProbability    = ctx.queryParam("min_country_probability");
 
-        List<Profile> all = service.getAll(gender, countryId, ageGroup, minAge, maxAge, minGenderProbability, minCountryProbability);
+        List<Profile> all = service.getAll(gender, countryId, ageGroup, minAge, maxAge, minGenderProbability, minCountryProbability, sortBy, order);
         ctx.json(ApiResponse.successForAll(all, all.size()));
     }
 

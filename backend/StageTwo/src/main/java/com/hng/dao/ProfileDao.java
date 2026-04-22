@@ -3,6 +3,8 @@ package com.hng.dao;
 import com.hng.db.Connexion;
 import com.hng.model.Profile;
 import com.hng.model.ProfileSummary;
+import org.jetbrains.annotations.NotNull;
+
 import java.sql.Connection;
 import java.sql.*;
 import java.util.ArrayList;
@@ -45,10 +47,15 @@ public class ProfileDao {
     public Optional<Profile> findByName(String name) throws SQLException {
         String sql = "SELECT * FROM profiles WHERE name = ? LIMIT 1";
 
+        return getProfile(sql, name.toString(), name);
+    }
+
+    @NotNull
+    private Optional<Profile> getProfile(String sql, String condition, String name) throws SQLException {
         try (Connection conn = Connexion.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, name.toString());
+            stmt.setString(1, condition);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -62,23 +69,12 @@ public class ProfileDao {
     public Optional<Profile> findById(UUID id) throws SQLException {
         String sql = "SELECT * FROM profiles WHERE id = ?";
 
-        try (Connection conn = Connexion.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, id.toString());
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return Optional.of(mapFull(rs));
-                }
-                return Optional.empty();
-            }
-        }
+        return getProfile(sql, id.toString(), "");
     }
 
     public List<Profile> findAll(String gender, String countryId, String ageGroup,
                                         String minAge, String maxAge, String minGenderProbability,
-                                        String minCountryProbability) throws SQLException
+                                        String minCountryProbability, String sortBy, String order) throws SQLException
     {
 
         StringBuilder sql = new StringBuilder(
@@ -125,7 +121,15 @@ public class ProfileDao {
         if (!conditions.isEmpty()) {
             sql.append(" WHERE ").append(String.join(" AND ", conditions));
         }
-        sql.append(" ORDER BY created_at DESC");
+
+        if (sortBy != null && !sortBy.isBlank()){
+            if (order != null && !order.isBlank() && (order.equalsIgnoreCase("asc") || order.equalsIgnoreCase("desc"))){
+                sql.append(String.format(" ORDER BY %s %s", sortBy, order.toUpperCase()));
+            }else {
+                sql.append(String.format(" ORDER BY %s", sortBy));
+            }
+        }
+
 
         try (Connection conn = Connexion.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())){

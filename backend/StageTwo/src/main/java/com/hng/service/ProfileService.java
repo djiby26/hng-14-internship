@@ -44,10 +44,10 @@ public class ProfileService {
 
     public List<Profile> getAll(String gender, String countryId,
                                        String ageGroup, String minAge, String maxAge,
-                                       String minGenderProbability, String minCountryProbability
+                                       String minGenderProbability, String minCountryProbability, String sortBy, String order
     ) throws SQLException
     {
-        return dao.findAll(gender, countryId, ageGroup, minAge, maxAge, minGenderProbability, minCountryProbability);
+        return dao.findAll(gender, countryId, ageGroup, minAge, maxAge, minGenderProbability, minCountryProbability, sortBy, order);
     }
 
     public boolean delete(String id) throws SQLException {
