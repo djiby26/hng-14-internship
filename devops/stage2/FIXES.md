@@ -1,0 +1,3 @@
+- The api needed fastapi[standard] instead of fastapi
+- Add a redis container
+- Create virtuals environments for /api and /worker

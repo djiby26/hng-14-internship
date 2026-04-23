@@ -5,7 +5,6 @@ import com.hng.dto.ExternalApiResponses;
 import com.hng.exceptions.ExternalApiException;
 import com.hng.model.Profile;
 import com.hng.dto.ExternalApiResponses.*;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
