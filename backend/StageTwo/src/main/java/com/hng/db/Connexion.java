@@ -12,7 +12,7 @@ public class Connexion {
     public static Connection getConnection() {
 //        if (connection == null) {
             try {
-                String url = "jdbc:mysql://localhost:3306/hng_db";
+                String url = "jdbc:mysql://db:3306/hng_db";
                 String user = "pape";
                 String password = "1234";
 

@@ -1,6 +1,5 @@
 package com.hng;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.hng.controller.ProfileController;
 import com.hng.dao.ProfileDao;

@@ -74,7 +74,7 @@ public class ProfileDao {
 
     public List<Profile> findAll(String gender, String countryId, String ageGroup,
                                         String minAge, String maxAge, String minGenderProbability,
-                                        String minCountryProbability, String sortBy, String order) throws SQLException
+                                        String minCountryProbability, String sortBy, String order, String page, String limit) throws SQLException
     {
 
         StringBuilder sql = new StringBuilder(
@@ -82,40 +82,41 @@ public class ProfileDao {
         );
 
         List<String> conditions = new ArrayList<>();
-        List<String> values     = new ArrayList<>();
+        List<String> conditionsValues     = new ArrayList<>();
+
 
         if (gender != null && !gender.isBlank()) {
             conditions.add("gender = ?");
-            values.add(gender.toLowerCase());
+            conditionsValues.add(gender.toLowerCase());
         }
 
         if (countryId != null && !countryId.isBlank()) {
             conditions.add("country_id = ?");
-            values.add(countryId.toUpperCase());
+            conditionsValues.add(countryId.toUpperCase());
         }
         if (ageGroup != null && !ageGroup.isBlank()) {
             conditions.add("age_group = ?");
-            values.add(ageGroup.toLowerCase());
+            conditionsValues.add(ageGroup.toLowerCase());
         }
 
         if (minAge != null && !minAge.isBlank()) {
             conditions.add("age > ?");
-            values.add(minAge);
+            conditionsValues.add(minAge);
         }
 
         if (maxAge != null && !maxAge.isBlank()) {
             conditions.add("age < ?");
-            values.add(maxAge);
+            conditionsValues.add(maxAge);
         }
 
         if (minGenderProbability != null && !minGenderProbability.isBlank()) {
             conditions.add("gender_probability < ?");
-            values.add(minGenderProbability);
+            conditionsValues.add(minGenderProbability);
         }
 
         if (minCountryProbability != null && !minCountryProbability.isBlank()) {
             conditions.add("country_probability < ?");
-            values.add(minCountryProbability);
+            conditionsValues.add(minCountryProbability);
         }
 
         if (!conditions.isEmpty()) {
@@ -130,12 +131,16 @@ public class ProfileDao {
             }
         }
 
+        int pageNumber = Integer.parseInt(page);
+        int size = Math.min(Integer.parseInt(limit), 50);
+        int offset = (pageNumber - 1) * size;
+        sql.append(String.format(" LIMIT %s OFFSET %s", size, offset));
 
         try (Connection conn = Connexion.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())){
 
-            for (int i = 0; i < values.size(); i++) {
-                stmt.setString(i + 1, values.get(i));
+            for (int i = 0; i < conditionsValues.size(); i++) {
+                stmt.setString(i + 1, conditionsValues.get(i));
             }
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -147,6 +152,21 @@ public class ProfileDao {
 
                 return results;
             }
+        }
+    }
+
+    public int countAll() throws SQLException {
+        String sql = "SELECT COUNT(id) FROM profiles";
+
+        try (Connection conn = Connexion.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+            return 0;
         }
     }
 

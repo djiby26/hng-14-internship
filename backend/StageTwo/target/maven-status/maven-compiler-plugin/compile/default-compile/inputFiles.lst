@@ -1,0 +1,12 @@
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/exceptions/ExternalApiException.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/service/EnrichmentService.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/model/ProfileSummary.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/App.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/db/Connexion.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/dao/ProfileDao.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/parser/QueryParser.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/controller/ProfileController.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/dto/ApiResponse.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/service/ProfileService.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/model/Profile.java
+/home/jeeby/hng-14-intership/backend/StageTwo/src/main/java/com/hng/dto/ExternalApiResponses.java

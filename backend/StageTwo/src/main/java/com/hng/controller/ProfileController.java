@@ -3,6 +3,7 @@ package com.hng.controller;
 import com.hng.dto.ApiResponse;
 import com.hng.model.Profile;
 import com.hng.model.ProfileSummary;
+import com.hng.parser.QueryParser;
 import com.hng.service.ProfileService;
 import com.hng.service.ProfileService.CreateResult;
 import io.javalin.http.Context;
@@ -22,6 +23,9 @@ public class ProfileController {
     public void registerRoutes() {
         path("/api/profiles", () -> {
             get (this::getAll);
+            path("/search", () -> {
+                get(this::search);
+            });
             path("/{id}", () -> {
                 get   (this::getById);
                 delete(this::deleteP);
@@ -63,11 +67,12 @@ public class ProfileController {
         String maxAge    = ctx.queryParam("max_age");
         String sortBy = ctx.queryParam("sort_by");
         String order = ctx.queryParam("order");
+        String page =  ctx.queryParamAsClass("page", String.class).getOrDefault("1");
+        String limit = ctx.queryParamAsClass("limit", String.class).getOrDefault("10");
         String minGenderProbability    = ctx.queryParam("min_gender_probability");
         String minCountryProbability    = ctx.queryParam("min_country_probability");
-
-        List<Profile> all = service.getAll(gender, countryId, ageGroup, minAge, maxAge, minGenderProbability, minCountryProbability, sortBy, order);
-        ctx.json(ApiResponse.successForAll(all, all.size()));
+        List<Profile> all = service.getAll(gender, countryId, ageGroup, minAge, maxAge, minGenderProbability, minCountryProbability, sortBy, order, page, limit);
+        ctx.json(ApiResponse.successForAll(all, Integer.parseInt(page), Integer.parseInt(limit), service.getTotalProfileCount()));
     }
 
     // -------------------------------------------------------------------------
@@ -96,5 +101,53 @@ public class ProfileController {
         } else {
             ctx.status(404).json(ApiResponse.error("Profile not found"));
         }
+    }
+
+    private void search(Context ctx) throws SQLException {
+
+        String q     = ctx.queryParam("q");
+        String page  = ctx.queryParamAsClass("page", String.class).getOrDefault("1");
+        String limit = ctx.queryParamAsClass("limit", String.class).getOrDefault("10");
+
+        QueryParser.ParsedQuery filters = QueryParser.parse(q);
+
+        if (!filters.interpreted) {
+            ctx.status(400).json(Map.of(
+                    "status",  "error",
+                    "message", "Unable to interpret query"
+            ));
+            return;
+        }
+
+        List<Profile> profiles = service.getAll(
+                filters.gender,
+                filters.countryId,
+                filters.ageGroup,
+                filters.minAge,
+                filters.maxAge,
+                null,   // minGenderProbability
+                null,   // minCountryProbability
+                null,   // sortBy
+                null,   // order
+                page,
+                limit
+        );
+
+        int total = service.getTotalProfileCount();
+
+        ctx.json(Map.of(
+                "data",        profiles,
+                "page",        Integer.parseInt(page),
+                "limit",       Integer.parseInt(limit),
+                "total",       total,
+                "interpreted", Map.of(
+                        "gender",    filters.gender   != null ? filters.gender   : "",
+                        "countryId", filters.countryId != null ? filters.countryId : "",
+                        "ageGroup",  filters.ageGroup != null ? filters.ageGroup : "",
+                        "minAge",    filters.minAge   != null ? filters.minAge   : "",
+                        "maxAge",    filters.maxAge   != null ? filters.maxAge   : ""
+                )
+        ));
+
     }
 }
